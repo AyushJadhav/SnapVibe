@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
+import dj_database_url
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,7 +21,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
  
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY ='django-insecure-r=8$90v*_zf(6cr*84mka@^fv)(x&40r(b*l+no=5i#+)0a#0h'
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    "django-insecure-r=8$90v*_zf(6cr*84mka@^fv)(x&40r(b*l+no=5i#+)0a#0h"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -43,6 +47,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -54,7 +59,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'snap_vibe.urls'
 
 CSRF_TRUSTED_ORIGINS = [
-'https://3b429decc4ad47f697ff219644cec051.vfs.cloud9.eu-west-1.amazonaws.com']
+'https://3b429decc4ad47f697ff219644cec051.vfs.cloud9.eu-west-1.amazonaws.com','https://snap-vibe.onrender.com']
 
 TEMPLATES = [
     {
@@ -79,11 +84,12 @@ WSGI_APPLICATION = 'snap_vibe.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    "default": dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+    )
 }
+
 
 
 # Password validation
@@ -127,4 +133,6 @@ MEDIA_URL='/media/'
 MEDIA_ROOT=os.path.join(BASE_DIR,'media/')
 
 STATIC_URL = '/static/'
-STATIC_ROOT = 'static'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
