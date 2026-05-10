@@ -37,18 +37,28 @@
     {% endif %}
      
   <div>
-      {% if post.liked_by.count < 1 %}
-      {% elif post.liked_by.count == 1 %}
-      {{post.liked_by.first }} Likes this
-      {% elif post.liked_by.count > 1 %}
-      {{ post.liked_by.first }} & {{post.liked_by.count  }} Likes this
-      {% endif %}
-  </div>
+    {% if post.liked_by.count == 0 %}
+
+    {% elif post.liked_by.count == 1 %}
+        {{ post.liked_by.first }} likes this
+
+    {% elif post.liked_by.count == 2 %}
+        {{ post.liked_by.first }} & 1 other like this
+
+    {% else %}
+        {{ post.liked_by.first }} & {{ post.other_likes_count }} others like this
+    {% endif %}
+</div>
   <div class="container" style="background-color: white; padding: 10px; margin: 20px; width: 700px">
     {% for comment in post.comment.all %}
-    <b>{{ comment.posted_by}}</b>: {{comment.body}}
-    {% endfor %} 
-  </div>
+        <div style="background-color: #f5f5f5; padding: 10px; margin-bottom: 8px; border-radius: 8px;">
+            <b>{{ comment.posted_by }}</b>
+            <p style="margin: 5px 0 0 0;">{{ comment.body }}</p>
+        </div>
+    {% empty %}
+        <p style="color: gray;">No comments yet.</p>
+    {% endfor %}
+</div>
   <div>
     <form method="post">
       {% csrf_token %}
